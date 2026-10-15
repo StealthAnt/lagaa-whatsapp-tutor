@@ -123,7 +123,7 @@ See [`agent/skills/ghana-steam-curriculum/references/subjects.md`](agent/skills/
 
 ## Next development steps
 
-1. Populate `agent/data/objective-questions.ts` only with original or permitted questions that have documented provenance and teacher review; see `docs/OBJECTIVE_QUESTION_BANK.md`.
+1. Populate `agent/lib/objective-questions.ts` only with original or permitted questions that have documented provenance and teacher review; see `docs/OBJECTIVE_QUESTION_BANK.md`.
 2. Map approved NaCCA curriculum metadata by year, subject, topic, and indicator, linking to official PDFs rather than redistributing substantial source text.
 3. Add a browser demo and short example conversations for review.
 4. Before changing state adapters, define retention/deletion behavior and avoid adding learner profiles, names, school identifiers, streaks, or cross-chat progress.
