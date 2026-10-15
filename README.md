@@ -10,7 +10,8 @@ An Eve agent for Ghana Senior High School Year 1–3 learners. Lagaa supports th
 - A curriculum source map for Ministry of Education Year 1–3 pages, Teacher Resource System materials, Professional Development resources, and optional Class CrunchLabs activities.
 - Clear distinction between official Ghana curriculum resources and supplementary Class CrunchLabs inspiration.
 - WASSCE practice links for school-candidate and private-candidate sessions, including November/December, with examiner guidance, source attribution, and safeguards against presenting generated questions as past questions.
-- Tutor instructions specify an objective-quiz cap of 40, randomized multiple-choice options, and answer explanations. These are model-guided rules, not yet independently enforced by quiz-state code.
+- Objective quizzes use a deterministic answer-key engine: one active quiz is limited to 40 approved questions, option order is shuffled, and marking plus explanations bypass the language model. Quiz state contains only the active quiz and is held in the Chat SDK's in-memory state adapter for this prototype.
+- The question bank is deliberately empty until questions have documented provenance and subject-teacher review. Lagaa refuses to invent or serve unreviewed objective questions; the supplied `steam-tutor-core` sample questions were marked unreviewed and were not copied.
 - Privacy-first tutoring instructions: Lagaa does not ask learners for personal details; they can choose a subject and optionally an SHS year. WhatsApp, the AI provider, and hosting provider still process messages and routing metadata, so the service is not anonymous.
 
 The source map helps the tutor point learners to official resources. It does not mean the linked PDFs have all been imported or indexed; the tutor should not claim exact alignment to a document it has not read.
@@ -105,7 +106,7 @@ From the allowed recipient number, message the Meta test number (or the live Lag
 
 1. “Hi” receives a reply identifying the tutor as Lagaa and offering the subjects.
 2. Choosing a subject and Year 1, 2, or 3 gets a relevant explanation.
-3. “Quiz me with 3 questions on Physics” starts a quiz with randomized choices and explanations after responses.
+3. “Quiz me with 3 questions on Physics” starts the deterministic quiz flow if reviewed questions exist. The bank currently has no items, so the expected behavior today is an honest notice that no reviewed Physics items are available yet.
 4. A request for WASSCE Nov/Dec practice points to the private-candidate resources in the source map.
 
 Check Vercel's deployment logs and Meta's webhook delivery view if messages do not arrive. Confirm the access token is valid, the phone number ID is correct, and `messages` is subscribed. For signature errors, recheck `WHATSAPP_APP_SECRET`.
@@ -114,7 +115,7 @@ Check Vercel's deployment logs and Meta's webhook delivery view if messages do n
 
 Lagaa is configured not to ask for learner names, ages, school names, locations, contact details, IDs, or other personal information. It asks only for academic context such as subject, topic, and optionally SHS year. WhatsApp still processes the sender's phone number to route messages, so do not describe the service as anonymous. Tell learners not to post personal details, and avoid collecting or retaining them in any added analytics or storage.
 
-The current WhatsApp channel uses in-memory state, which is suitable for a prototype but loses subscriptions and conversation continuity when the process restarts. The 40-question cap, privacy rules, source labeling, and safety behavior are currently prompt-level instructions; they are not hard-enforced by separate runtime validators or moderation. Do not treat this prototype as production-ready for minors until those controls, provider data handling, consent, retention, support/escalation, and applicable Ghanaian requirements have been reviewed. WhatsApp requires approved message templates for business-initiated messages outside its customer-service window; the current tutor flow is designed to reply to learner-initiated messages.
+The current WhatsApp channel uses in-memory state, which is suitable for a prototype but loses subscriptions and conversation continuity when the process restarts. The objective-quiz cap and answer marking are code-enforced for the deterministic quiz flow. Learn mode, subjective mock marking, privacy behavior in model-generated replies, source labeling, and moderation still depend on instructions and provider behavior. Do not treat this prototype as production-ready for minors until provider data handling, consent, retention, support/escalation, and applicable Ghanaian requirements have been reviewed. WhatsApp requires approved message templates for business-initiated messages outside its customer-service window; the current tutor flow is designed to reply to learner-initiated messages.
 
 ## Curriculum sources
 
@@ -122,8 +123,9 @@ See [`agent/skills/ghana-steam-curriculum/references/subjects.md`](agent/skills/
 
 ## Next development steps
 
-1. Confirm one or two priority subjects for the first learner pilot.
-2. Confirm permissions for any corpus use; then map approved NaCCA curriculum metadata by year, subject, topic, and indicator, linking to official PDFs rather than redistributing substantial source text.
+1. Populate `agent/data/objective-questions.ts` only with original or permitted questions that have documented provenance and teacher review; see `docs/OBJECTIVE_QUESTION_BANK.md`.
+2. Map approved NaCCA curriculum metadata by year, subject, topic, and indicator, linking to official PDFs rather than redistributing substantial source text.
 3. Add a browser demo and short example conversations for review.
-4. Replace in-memory Chat SDK state with a persistent adapter and set production privacy, retention, and learner-support policies.
+4. Before changing state adapters, define retention/deletion behavior and avoid adding learner profiles, names, school identifiers, streaks, or cross-chat progress.
 5. Configure the real Meta app and run end-to-end message trials.
+
