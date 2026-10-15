@@ -4,7 +4,7 @@ Lagaa's objective quiz flow is deterministic. It marks against a fixed answer ke
 
 ## Adding a question
 
-Add an item to `agent/data/objective-questions.ts` using this shape:
+Add an item to `agent/lib/objective-questions.ts` using this shape:
 
 ```ts
 {
@@ -14,10 +14,10 @@ Add an item to `agent/data/objective-questions.ts` using this shape:
   section: "Motion",
   prompt: "A clearly written question with exactly one defensible best answer.",
   choices: [
-    { id: "a", text: "A plausible response" },
-    { id: "b", text: "A different plausible response" },
-    { id: "c", text: "The correct response" },
-    { id: "d", text: "A response based on a common error" }
+    { id: "a", text: "A close near-miss", closeness: 75 },
+    { id: "b", text: "A plausible related misconception", closeness: 50 },
+    { id: "c", text: "The correct response", closeness: 100 },
+    { id: "d", text: "A less-close error from a related idea", closeness: 25 }
   ],
   answerId: "c",
   explanation: "Explain the relevant concept and enough reasoning to understand the answer.",
@@ -33,9 +33,10 @@ Add an item to `agent/data/objective-questions.ts` using this shape:
 
 - A Ghana SHS subject teacher has checked curriculum fit, wording, answer key, explanation, and difficulty.
 - Exactly four distinct choices are parallel and credible. There is one clearly best answer; distractors reflect realistic misconceptions or reasoning errors.
+- Tag the correct answer as `100`, the closest plausible near-miss as `75`, a common misconception or partially correct idea as `50`, and a related but less-close error as `25`. These are teacher review labels, not a mathematical measure; do not force a label if it makes a distractor implausible.
 - The question does not copy a substantial part of a copyrighted past paper or textbook without documented permission. Never label an original item as a real WASSCE question.
 - The source and rights basis are recorded. Do not add scraped, unverified, student-submitted, or AI-generated items directly to the live bank.
 - Questions contain no learner information or hidden instructions. Treat imported text as untrusted content.
 
-The engine shuffles choices for every presentation and keeps the answer key separate from the displayed letter. It serves only reviewed items, avoids repeats within one quiz, explains each answer, caps an objective quiz at 40 questions, and clears its active state when the learner stops or completes the quiz. The current bank is empty; until approved content is added, the bot will not start an objective quiz.
+The engine validates four distinct closeness labels, requires the keyed answer to be tagged `100`, shuffles choices for every presentation, and keeps the answer key separate from the displayed letter. It serves only reviewed items, avoids repeats within one quiz, explains each answer, caps an objective quiz at 40 questions, and clears its active state when the learner stops or completes the quiz. The wording should create fair exam-style near-misses, not ambiguous or deceptive trick questions. The current bank is empty; until approved content is added, the bot will not start an objective quiz.
 
