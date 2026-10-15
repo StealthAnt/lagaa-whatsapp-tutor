@@ -1,10 +1,10 @@
 import type { Thread } from "chat";
-import { objectiveQuestions } from "../data/objective-questions.js";
+import { objectiveQuestions } from "./objective-questions.js";
 
 const MAX_QUESTIONS = 40;
 const CHOICES = ["A", "B", "C", "D"] as const;
 
-type Choice = { id: string; text: string };
+type Choice = { id: string; text: string; closeness: 25 | 50 | 75 | 100 };
 type ObjectiveQuestion = {
   id: string;
   subject: string;
@@ -55,7 +55,9 @@ function validateBank(items: ObjectiveQuestion[]): ObjectiveQuestion[] {
       question.choices.length !== 4 ||
       question.choices.some((choice) => !choice.id?.trim() || !choice.text?.trim()) ||
       new Set(question.choices.map((choice) => choice.id)).size !== 4 ||
-      !question.choices.some((choice) => choice.id === question.answerId)
+      !question.choices.some((choice) => choice.id === question.answerId && choice.closeness === 100) ||
+      new Set(question.choices.map((choice) => choice.closeness)).size !== 4 ||
+      ![25, 50, 75, 100].every((distance) => question.choices.some((choice) => choice.closeness === distance))
     ) {
       return false;
     }
