@@ -2,6 +2,7 @@ import { createWhatsAppAdapter } from "@chat-adapter/whatsapp";
 import { createMemoryState } from "@chat-adapter/state-memory";
 import type { Message, Thread } from "chat";
 import { chatSdkChannel } from "eve/channels/chat-sdk";
+import { handleObjectiveQuizMessage } from "../lib/objective-quiz.js";
 
 export const { bot, channel, send } = chatSdkChannel({
   userName: "Lagaa",
@@ -14,11 +15,16 @@ const textOnlyNotice =
 
 bot.onNewMention(async (thread: Thread, message: Message) => {
   await thread.subscribe();
-  await send(message.text.trim() || textOnlyNotice, { thread });
+  const text = message.text.trim();
+  if (await handleObjectiveQuizMessage(thread, text)) return;
+  await send(text || textOnlyNotice, { thread });
 });
 
 bot.onSubscribedMessage(async (thread: Thread, message: Message) => {
-  await send(message.text.trim() || textOnlyNotice, { thread });
+  const text = message.text.trim();
+  if (await handleObjectiveQuizMessage(thread, text)) return;
+  await send(text || textOnlyNotice, { thread });
 });
 
 export default channel;
+
